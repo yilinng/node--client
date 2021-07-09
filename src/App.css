@@ -1,38 +1,181 @@
-.App {
+.container {
+  margin: auto;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+
+form {
+  display: block;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+form input {
+  height: 40px;
+  width: 50%;
+  border: none;
+  border-bottom: 2px #101113 solid;
+  background: none;
+  font-size: 18px;
+  color: #787a80;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+input:focus {
+  outline: none;
+}
+
+form button {
+  margin-top: 20px;
+  width: 150px;
+  height: 50px;
+  font-size: 25px;
+  border: none;
+  background-color: #0000CD;
+  color: #EE82EE;
+  font-weight: 500;
+  border-radius: 10rem;
+  cursor: pointer;
+}
+
+.passwordConfirm  {
+  margin-top: 30px;
+}
+
+.container {
+  height: 100vh;
+}
+
+header{
+  position: fixed;
+  height: 80px;
+  width: 100%;
+  background-color: #fafafa;
+  z-index: 10;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  justify-content: space-between;
 }
 
-.App-link {
-  color: #61dafb;
+header span {
+  margin: 1.5%;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+header svg {
+  height: 30px;
+  width: 30px;
+  cursor: pointer;
+}
+
+.todo {
+  display: flex;
+  height: 100vh;
+}
+
+.sideBarTodo{
+  position: relative;
+  height: 100vh;
+  background-color: #f1f1f1;
+  display: none;
+  margin-top: 4.5%;
+}
+
+ .active{
+  width: 20%;
+  display: block;
+}
+
+.sideBarTodo .list h3 {
+  text-align: center;
+  border-bottom: azure 1px solid;
+}
+
+.sideBarTodo .list .li{
+ display: flex;
+ justify-content: space-around; 
+ text-align: center;
+ margin: 5px;
+ border-bottom: azure 1px solid;
+ cursor: pointer;
+}
+
+.sideBarTodo .list .li:hover{
+  background-color: cadetblue;
+  color: #eee;
+ }
+
+ .sideBarTodo .list .li svg{
+  width: 20px;
+  height: 20px;
+ }
+
+ .sideBarTodo .list .action {
+   position: absolute;
+   z-index: 10;
+   background-color: #fafafa;
+   display: flex;
+   flex-direction: column;
+   width: 150px;
+   height: 120px;
+ }
+
+.sideBarTodo .list .action svg{
+  width: 20px;
+  height: 20px;
+}
+.whiteBoard {
+  margin: 7% 15%;
+  width: 65%;
+  display: block;
+  overflow: hidden;
+}
+
+.whiteBoard .title input{
+  font-size: 30px;
+  width: 100%;
+  border: none;
+  font-weight: 700;
+  border-bottom: #eee 1px solid;
+}
+
+.whiteBoard .contextList {
+  margin-top: 5px;
+}
+
+.whiteBoard .contextList .context input{
+  margin-bottom: 5px;
+  border: none;
+  border-bottom: #eee 1px solid;
+  font-size: 15px;
+  width: 100%;
+}
+
+@media screen and (max-width: 670px){
+
+  header {
+    height: 40px;
   }
-  to {
-    transform: rotate(360deg);
+
+  header span {
+    margin: 10px;
   }
+
+  header svg {
+    height: 20px;
+    width: 20px;
+  }
+
+  .sideBarTodo{
+    position: absolute;
+    z-index: 5;
+    margin-top: 40px;
+  }
+  
+   .active{
+    width: 75%;
+    display: block;
+  }
+
+  .whiteBoard {
+    margin: 60px auto;
+  }
+
+
+  
 }
