@@ -185,7 +185,9 @@ export function AuthProvider({ children }) {
                         setCurrentUser(prevState => {
                             return {...prevState, user: data.user};
                         });
-                    }  
+                    };
+                //when getUser finshed and run getTodo    
+                 getTodo();
                 })      
                 .catch(err => console.log(err)); 
             }
@@ -243,6 +245,7 @@ export function AuthProvider({ children }) {
         });
     }
 
+    //when getUser finish, run getTodo
     function getTodo(){
         const authCookie = Cookies.get('auth');
         const token = inMemoryToken ? inMemoryToken.acToken : null;
@@ -382,7 +385,7 @@ export function AuthProvider({ children }) {
             getCookies();
             //when get cookies ,wait 500ms to get data
             setTimeout(() => {
-                 getUser();
+                getUser();
             }, 500);
         }else{
             getUser();

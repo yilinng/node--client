@@ -57,6 +57,11 @@ header span {
   margin: 1.5%;
 }
 
+header .title {
+  font-size: 20px;
+  font-weight: 500;
+}
+
 header svg {
   height: 30px;
   width: 30px;
@@ -70,7 +75,7 @@ header svg {
 
 .sideBarTodo{
   position: relative;
-  height: 100vh;
+  height: 85vh;
   background-color: #f1f1f1;
   display: none;
   margin-top: 4.5%;
@@ -95,6 +100,7 @@ header svg {
  cursor: pointer;
 }
 
+
 .sideBarTodo .list .li:hover{
   background-color: cadetblue;
   color: #eee;
@@ -103,6 +109,12 @@ header svg {
  .sideBarTodo .list .li svg{
   width: 20px;
   height: 20px;
+  border-radius: 5px;
+ }
+
+ .sideBarTodo .list .li svg:active{
+  background-color: #787a80;
+  color: white;
  }
 
  .sideBarTodo .list .action {
@@ -113,12 +125,42 @@ header svg {
    flex-direction: column;
    width: 150px;
    height: 120px;
+   text-align: center;
+   border:#eee 1px solid;
  }
+
+ .sideBarTodo .list .action span {
+   width: 90%;
+   height: auto;
+   margin: auto;
+   cursor: pointer;
+   color: black;
+ }
+
+ .sideBarTodo .list .action span:hover, .sideBarTodo .list .action span:active{
+  background-color: #787a80;
+  color: #eee;
+  font-weight: 500;
+}
+
 
 .sideBarTodo .list .action svg{
   width: 20px;
   height: 20px;
+  vertical-align: bottom;
 }
+
+.sideBarTodo .list .addOne {
+  cursor: pointer;
+  width: 90%;
+}
+
+.sideBarTodo .list .addOne:hover {
+  cursor: pointer; 
+  background-color: #787a80;
+  color: #eee;
+}
+
 .whiteBoard {
   margin: 7% 15%;
   width: 65%;
