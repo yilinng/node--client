@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, Redirect, useHistory } from 'react-router-dom';
+import Spinner from './ui/Spinner';
 
 export default function Login() {
     const emailRef = useRef('')
@@ -50,9 +51,10 @@ export default function Login() {
                 //get error message    
                     console.log(data);
                 setError(data.message);
+                setLoading(false)
                 })
             });         
-        setLoading(false);
+        
     }
 
     if(currentUser){
@@ -61,7 +63,8 @@ export default function Login() {
 
     return (
         <div className="container">
-        <div className="login">
+            {loading && <Spinner/>}
+        <div className={loading ? "login haveLoading" : "login"}>
             <div className="loginBody">
                 <h2>Log In</h2>
                 {error && <span>{error}</span>}
@@ -74,14 +77,9 @@ export default function Login() {
                     <div className="password">
                         <label htmlFor="password">Password: </label>
                         <input type="password" id="password" ref={passwordRef} required/>
-                    </div>
-                  
-
+                    </div>                  
                     <button disabled={loading} type="submit">log In</button>
                 </form>
-                <div className="linkForgot">
-                    <Link to="/forgot-password">Forgot Password?</Link>
-                </div>
             </div>
         </div>
         <div className="linkSign">

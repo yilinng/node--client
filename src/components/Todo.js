@@ -45,7 +45,7 @@ export default function Todo() {
       setShowAction(showAction);
 
     }
-
+    
     const handleBlur = (index) => {
       //To have Onblur on an element it should receive focus first, 
       //Div elements don't receive focus by default. You can add tabindex="0"
@@ -74,10 +74,9 @@ export default function Todo() {
 
     useEffect(() => {
       
-      const fetchTodo = async() => {
-        //await getTodo();
-        if(todos.length < 1) return false;
-        if(showAction.length > filterTodos.length) return false;
+      function fetchTodo () {
+      
+        if(showAction.length !== filterTodos.length) return false;
         let i = filterTodos.length;
         while(i){// when i becomes 0, the condition becomes falsy, and the loop stops
           setShowAction(oldArray => [...oldArray, false]);
@@ -85,14 +84,14 @@ export default function Todo() {
         }
       }
       fetchTodo();
-      console.log('work');
     }, []);
 
+    
     //useffect work with variable, not work with array
     useEffect(() => {
       console.log(showAction, actionNumber)
     },[actionNumber, showAction])
-
+    
     if (!currentUser) {
         return <Redirect to="/login" />;
       }
@@ -126,7 +125,7 @@ export default function Todo() {
                 return (
                   <div key={da._id} className="li" onClick={() => setLinkId(da._id)}>
                         <strong>
-                           <span>{da.title || 'Untitle'}</span>
+                           <span>{  da.title || 'Untitle' }</span>
                         </strong>                         
                         <span className="minMenu" tabIndex="0" onClick={() => HandleAction(index)} onBlur={() => handleBlur(index)}>
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -150,7 +149,7 @@ export default function Todo() {
             <Link to="/">Cancel</Link>
          </div>
            { linkId && certainTodo && 
-           <SingleTodo certainTodo={certainTodo} linkId={linkId} key={linkId}/> } 
+           <SingleTodo certainTodo={certainTodo} key={linkId}/> } 
         </div>
         </div>
 

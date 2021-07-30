@@ -121,9 +121,7 @@ export function AuthProvider({ children }) {
     function getToken(){
         
        const cookies = Cookies.get('auth');
-       const token = inMemoryToken ? 
-       {
-           token: inMemoryToken.token} : null;
+       const token = inMemoryToken ? {token: inMemoryToken.token} : null;
         
         if(cookies !== undefined){
           
@@ -150,7 +148,7 @@ export function AuthProvider({ children }) {
                 setTimeout(() => {
                     console.log('get token');
                     getToken();
-                }, 5*60*1000 - 5000)
+                }, 20*60*1000 - 5000)
             
         }
       
@@ -196,16 +194,16 @@ export function AuthProvider({ children }) {
         setLoading(false);
 
               
-    //accessToken live 10m!
+    //accessToken live 20m!
     //when timeout have to use gettoken(); get newtoken       
     setTimeout(() => {
         getToken();
-    }, 5*60*1000 -10000)
+    }, 20*60*1000 -10000)
     
     }
 
     function updateUser(data){
-        console.log(data)
+        
         const token = inMemoryToken ? inMemoryToken.acToken : null;
 
         fetch("api/users/update-profile", {

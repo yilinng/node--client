@@ -22,13 +22,14 @@ export default function UpdateProfile() {
         const email = emailRef.current.value ? emailRef.current.value : currentUser.user.email;
         const password = passwordRef.current.value ? passwordRef.current.value : currentUser.user.password;
 
+       
         const data = {
             _id: currentUser.user._id,
             name: name,
             email: email, 
             password: password
         };
-
+       
         setError("");
         setLoading(true);
         //have to use certain cookies have to pass to authContext's updateUser

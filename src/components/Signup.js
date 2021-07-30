@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { Link, Redirect, useHistory } from 'react-router-dom';
+import Spinner from "./ui/Spinner";
 
 export default function Signup() {
     const nameRef = useRef('');
@@ -56,12 +57,11 @@ export default function Signup() {
             console.log(err.status, err.statusText);
             err.json().then((data) => {
             //get error message    
-                console.log(data);
-            setError(data.message);
+            console.log(data)
+            setError(data.message)
+            setLoading(false)
             })
         });
-
-        setLoading(false);
        
     }
 
@@ -72,7 +72,8 @@ export default function Signup() {
 
     return (
         <div className="container">
-          <div className="signup">
+            {loading && <Spinner/>}
+          <div className={ loading ? "signup haveLoading": "signup" }>
               <div className="signbody">
                 <h2>Sign up</h2>
                 {error && <span>{error}</span>}

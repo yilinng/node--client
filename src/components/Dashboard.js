@@ -5,11 +5,11 @@ import { Link, Redirect, useHistory } from 'react-router-dom';
 export default function Dashboard() {
 
     const [error, setError] = useState('');
-    const { currentUser, logout, message } = useAuth()
+    const { currentUser, logout, message, setMessage } = useAuth()
     const history = useHistory();
 
     //check private source and setHeader when match token
-
+    
     async function handleLogout(){
         setError('')
 
@@ -30,15 +30,32 @@ export default function Dashboard() {
         <div className="card">
                 <div className="cardBody">
                     <h2>Profile</h2>
-                    {error && <span>{error}</span>}
-                    {message && <span>{message}</span>}
-                    <strong>Email:</strong> {currentUser.user.email}
-                    <Link to="/update-profile">
-                        Update Profile
-                    </Link>
-                    <Link to="/todos">
-                    Todo List
-                    </Link>
+                    {error && 
+                    <div className="boardError">
+                        <span>{error}</span>
+                    </div>
+                    }
+                    {message ? 
+                    <div className="boardMessage">
+                        <span className="close" onClick={()=>setMessage('')}>X</span>
+                        <span className="msg">{message}</span> 
+                    </div> :
+                    <div className="nullMessage"></div>
+                    }
+                    <div className="textwelcome">
+                        <span className="welcome">Welcome </span>
+                        <span className="name">{currentUser.user.name}</span>
+                    </div>
+                    <div className="link">
+                        <Link to="/update-profile">
+                            Update Profile
+                        </Link>
+                        <Link to="/todos">
+                        Todo List
+                        </Link>
+                    </div>
+                   
+                   
                 </div>
         </div>
         <div className="logout">
