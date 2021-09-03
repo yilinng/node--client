@@ -1,153 +1,71 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { v4 as uuidv4 } from 'uuid';
+import ContextAction from './Todo/ContextAction';
 
 export default function SingleTodo({certainTodo}) {
 
     const { updateTodo } = useAuth();
-    const titleRef = useRef('');
+    const [title, setTitle] = useState(certainTodo[0]?.title);
     const [contexts, setContexts] = useState([]);
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const [contextAction, setContextaction] = useState(-1);
+    const [width, setWidth] = useState(window.innerWidth);
 
- 
-    const handleKeyDown = async(e) => {
-        
+    
+    //detect mobile
+    function handleWindowSizeChange() {
+
+        setWidth(window.innerWidth);
+    }
+
+    useEffect(() => {
+        window.addEventListener('resize', handleWindowSizeChange);
+        return () => {
+            window.removeEventListener('resize', handleWindowSizeChange);
+        }
+    }, []);
+
+    let isMobile = (width <= 768);
+
+    const titleKeyDown = (e) => {
+        if(e.key === 'Enter'){
+            if(contexts.length < 1) {
+                setContextaction(-1);
+                setContexts(oldArray => [...oldArray, '']);
+            }
+            contexts.splice(0, 0, '');
+            setContexts([...contexts]);      
+        }
+    }
+
+    const contextKeyDown = (e) => {
         //change focus
-        const certainRow = e.target.parentElement;
-
+        const certainRow = e.target.parentElement.parentElement;
         //find index from dom HTMLCollection
         const findIndex = Array.from(certainRow.parentElement.children).indexOf(certainRow);
-        
-        // set up the mutation observer
-        const observer = new MutationObserver(function (mutations, me) {
-            // `mutations` is an array of mutations that occurred
-            // `me` is the MutationObserver instance
-            const canvas = document.querySelector('.contextList');
-            if (canvas) {
-            //console.log('have muation...', canvas.children, findIndex);
-            if(!canvas.children.length) return false;
-            if(e.target.getAttribute('name') === 'title') {
-                //console.log('event target on title')               
-               return canvas.children ? canvas.children[0]?.children[0].focus(): false
-            }
-            
-            //console.log('context row..',canvas.children[findIndex+1]);
-            canvas.children[findIndex+1]? canvas.children[findIndex+1].children[0].focus(): console.log('not found children')
-            me.disconnect(); // stop observing
-            return;
-            }
-        });
-            
-        // start observing
-        observer.observe(document, {
-            childList: true,
-            subtree: true
-        });
+        let cloneContexts = contexts;
         
         if(e.key === 'Enter'){
-            //console.log('enter work...');
-            //if not have any context
-            if(contexts.length < 1) return setContexts(oldArray => [...oldArray, '']);
-            
-            //last row
-            if(certainRow.nextElementSibling === null) {
-
-                //ensure no have value
-                if(!e.target.value) {
-                    setContexts(oldArray => [...oldArray, '']);
-                    //console.log('last context row no value...', contexts, certainRow.parentElement.children);
-                    return false;     
-                }
-                    contexts[findIndex] = e.target.value;
-                    setContexts(contexts);
-                    setContexts(oldArray => [...oldArray, '']);
-                    //console.log('last context row have value...', contexts);
-                
-            } 
-
-            //ensure no have value
-            if(!e.target.value){
-                // target row next add new row
-                contexts.splice(findIndex+1, 0, '');
-                setContexts([...contexts]);
-                //console.log('same context row no value', contexts, findIndex);
-            }
-            
-            if(e.target.getAttribute('name') === 'title'){
-                contexts.splice(0, 0, '');
-                setContexts([...contexts]);
-                //console.log('on title row...');
-                return;
-            }
-                contexts[findIndex] = e.target.value;
-                setContexts(contexts);
-                contexts.splice(findIndex+1, 0, '');
-                setContexts([...contexts]);
-                //console.log('same context row have value', contexts, findIndex);
-                
-         
-        };
-        
-       
-        if(e.key === 'ArrowUp'){
-            //row => title
-            if(certainRow.previousSibling === null){
-
-               return certainRow.parentElement.previousSibling.lastChild.focus();
-
-            }else{
-
-                certainRow.previousSibling.lastChild.focus();
-            }
-            //console.log(' ArrowUp', certainRow.previousSibling, certainRow.parentElement.previousSibling)
-           
+            cloneContexts.splice(findIndex + 1, 0, '');
+            setContexts([...cloneContexts])   
         }
- 
-        if(e.key === 'ArrowDown'){
+    }
 
-            //if not have any context
-            if(contexts.length < 1) return false;
-            //last row 
-            if(certainRow.nextElementSibling === null){
 
-               //console.log('next is null');
-
-            }else{
-            //console.log('ArrowDown', certainRow.nextElementSibling.firstChild);
-
-                if(certainRow.nextElementSibling.firstChild.nodeName === "DIV"){
-                    //console.log('close title');
-                    certainRow.nextElementSibling.firstChild.firstChild.focus();
-                }else{
-                    //console.log('same context');
-                    certainRow.nextElementSibling.firstChild.focus();
-                }
-            }
-           
-        }
-
-        if(e.key === 'Delete'){
-            //console.log('delete key...');
-            //ensure no have value
-            if(!e.target.value){
-                //target row remove 
-                contexts.splice(findIndex, 1);
-                setContexts([...contexts]);
-                //console.log('same context row no value', contexts, findIndex);
-            }
-        }
-        
+    const handleBlur = (e) => {
+       setContextaction(-1)
     }
 
 
     const handleUpdate = async() => {
-
-        let title = titleRef.current.value ? titleRef.current.value : certainTodo[0].title;
+        let titleText = title;
+        //let title = titleRef.current.value ? titleRef.current.value : certainTodo[0].title;
         let context = contexts.length ? contexts : certainTodo[0].context;
         
         const data = {
             _id: certainTodo[0]._id,
-            title: title, 
+            title: titleText, 
             context: context
         };
         console.log(data)
@@ -158,16 +76,49 @@ export default function SingleTodo({certainTodo}) {
     
     }
 
+    // context mutation
     const handleChange = (e) => {
-         //change focus
-         const certainRow = e.target.parentElement;
 
+        //const textCopy = e.target.nextSibling;
+        //const textArea = e.target.value;
+        //textCopy.innerHTML = textArea.replace(/\n/g, '<br/>')
+        //change focus
+        e.target.style.height = '';
+        e.target.style.height = e.target.scrollHeight + "px";
+        console.log(e.target.style.height)
+        const certainRow = e.target.parentElement.parentElement;
+
+        //find index from dom HTMLCollection
+        const findIndex = Array.from(certainRow.parentElement.children).indexOf(certainRow);
+     
+        const cloneContext = contexts;
+        cloneContext[findIndex] = e.target.value;
+        setContexts(cloneContext);
+       
+    }
+
+
+    const clickContext = (e) => {
+         //change focus
+         const certainRow = e.target.parentElement.parentElement;
          //find index from dom HTMLCollection
          const findIndex = Array.from(certainRow.parentElement.children).indexOf(certainRow);
-     
-        contexts[findIndex] = e.target.value;
-        setContexts(contexts);
+         setContextaction(findIndex)
     }
+
+    const deleteContext = () => {
+
+        //target row remove 
+        const filteredContext = contexts.filter((item, index) => index !== contextAction)
+        setContexts(filteredContext)
+    }
+
+    const addContext = () => {
+        console.log('add contexts...')
+        contexts.splice(contextAction + 1, 0, '');
+        setContexts([...contexts]);
+    }
+
 
     useEffect(() => {
         if(certainTodo.length > 0){
@@ -175,34 +126,81 @@ export default function SingleTodo({certainTodo}) {
         }
     },[certainTodo])
 
-    /*
-    useEffect(() => {
-        //https://babeljs.io/docs/en/babel-plugin-proposal-optional-chaining
-        console.log(todo[0]?.title ? todo[0].title : titleRef.current.value)
-    },[todo])
-    */
+
+    const handleTitleHight = (e) => {
+        setTitle(e.target.value)
+    }
+
+    // title height revise
+    function revise (element){
+
+        if(isMobile){
+
+        if(element < 18) return 50
+
+        if(element < 35) return 70
+
+        if(element < 51) return 90
+
+        if(element < 68) return 120
+
+        if(element < 80) return 130
+
+        if(element < 100) return 210
+
+        return element * 2
+
+        }else{
+           if(element < 20) return 50
+
+           if(element < 68) return 110
+
+           return element * 1.5
+        }
+    }
 
     return (
         <div className="whiteBoard">
-            <button className="updateBtn" disabled={loading} onClick={handleUpdate}>Update</button>
-            <div className="title">
-                <input type="text" id="title" name="title"
-                  defaultValue={ certainTodo[0]?.title ? certainTodo[0].title: titleRef.current.value }   
-                 //defaultValue only works for the initial load,
-                 //You can get around this if you need to by passing a key to the wrapper component
-                ref={titleRef} placeholder="Title..." onKeyDown={handleKeyDown}/>
+            <div className="btntips" onClick={handleBlur}>
+                <button className="updateBtn" disabled={loading} onClick={handleUpdate}>Update</button>
+                <span className="tips">tips: create a new line when press "Enter" key</span>
             </div>
-            <div className="contextList">
-                 {contexts.length > 0 && contexts.map((context, index) =>
-                     
-                    <div className="context" key={uuidv4()}>
-                         <input type="text" name="context" 
-                         defaultValue={context} 
-                         placeholder="Context..." onKeyDown={handleKeyDown} onChange={handleChange}/>
-                    </div>
-                     
-                )}
-               
+
+            <div className="main">
+
+                <div className="title" onClick={handleBlur}>
+                    <textarea name="title"
+                    defaultValue={ title } style={{height: title ? revise(title.length) : '50px'}}  
+                    //defaultValue only works for the initial load,
+                    //You can get around this if you need to by passing a key to the wrapper component
+                   placeholder="Title..." onChange={(handleTitleHight)} onKeyDown={titleKeyDown}/>
+                </div>
+
+                <div className="contextList">
+
+                    {contexts.length > 0 && contexts.map((context, index) =>
+                        
+                        <div className="context" key={uuidv4()}>
+                            {contextAction === index ? 
+                            <ContextAction deleteContext={deleteContext} handleBlur={handleBlur}
+                            addContext={addContext} /> : null}
+                            <div className="contextMenu" onClick={clickContext}>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                </svg>
+                            </div>
+
+                            <div className="contextText" onClick={handleBlur}>
+                                <textarea
+                                defaultValue={context} 
+                                placeholder="Context..." onChange={handleChange} onKeyUp={contextKeyDown}/>
+                                <div className="textCopy"></div>
+                            </div>
+
+                        </div>
+                        
+                    )}
+                </div>
             </div>
                      
         </div>

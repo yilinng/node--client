@@ -13,6 +13,23 @@ export default function Todo() {
     const [showSide, setShowSide] = useState(false);
     const [showAction, setShowAction] = useState([]);
     const [actionNumber, setActionNumber] = useState(0);
+    const [width, setWidth] = useState(window.innerWidth)
+
+    
+    //detect mobile
+    function handleWindowSizeChange() {
+
+        setWidth(window.innerWidth);
+    }
+
+    useEffect(() => {
+        window.addEventListener('resize', handleWindowSizeChange);
+        return () => {
+            window.removeEventListener('resize', handleWindowSizeChange);
+        }
+    }, []);
+
+    let isMobile = (width <= 768);
     
     //get data from same user_id
   
@@ -35,7 +52,7 @@ export default function Todo() {
       setLinkId(id);
       setLoading(true);
 
-      console.log(data);
+      //console.log(data);
       await addTodo(data);
       await getTodo();
       
@@ -49,7 +66,7 @@ export default function Todo() {
     const handleBlur = (index) => {
       //To have Onblur on an element it should receive focus first, 
       //Div elements don't receive focus by default. You can add tabindex="0"
-      console.log('on blur');
+      //console.log('on blur');
       showAction[index] = false;
       setShowAction(showAction);
       setActionNumber(actionNumber-1);
@@ -72,21 +89,31 @@ export default function Todo() {
       
     }
 
-    useEffect(() => {
-      
-      function fetchTodo () {
-      
-        if(showAction.length !== filterTodos.length) return false;
-        let i = filterTodos.length;
-        while(i){// when i becomes 0, the condition becomes falsy, and the loop stops
-          setShowAction(oldArray => [...oldArray, false]);
-          i--;
-        }
+    //sidebar title truncate
+    const truncate = (input) =>{
+      if (input.length > 20) {
+         return input.substring(0, 20) + '...';
       }
-      fetchTodo();
-    }, []);
+      return input;
+   };
 
-    
+   //header title truncate
+   const titleCut = (input) => {
+     if(isMobile){
+
+      if(input.length > 25){
+        return input.substring(0, 25) + '...';
+      }
+      return input;
+     }else{
+      if(input.length > 50){
+        return input.substring(0, 50) + '...';
+      }
+      return input;
+     }
+
+   } 
+
     //useffect work with variable, not work with array
     useEffect(() => {
       console.log(showAction, actionNumber)
@@ -105,7 +132,7 @@ export default function Todo() {
                     </svg>
                 </span>
 
-                <span className="title">{certainTodo[0]?.title ? certainTodo[0].title: 'Untitle'}</span> 
+                <span className="title">{certainTodo[0]?.title ?  titleCut(certainTodo[0].title): 'Untitle'}</span> 
 
                 <span className="shareBtn">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -125,7 +152,7 @@ export default function Todo() {
                 return (
                   <div key={da._id} className="li" onClick={() => setLinkId(da._id)}>
                         <strong>
-                           <span>{  da.title || 'Untitle' }</span>
+                           <span>{  truncate(da.title) || 'Untitle' }</span>
                         </strong>                         
                         <span className="minMenu" tabIndex="0" onClick={() => HandleAction(index)} onBlur={() => handleBlur(index)}>
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -149,7 +176,7 @@ export default function Todo() {
             <Link to="/">Cancel</Link>
          </div>
            { linkId && certainTodo && 
-           <SingleTodo certainTodo={certainTodo} key={linkId}/> } 
+           <SingleTodo certainTodo={certainTodo} key={linkId} /> } 
         </div>
         </div>
 

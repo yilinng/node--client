@@ -273,7 +273,6 @@ export function AuthProvider({ children }) {
 
     function addTodo(data){
 
-        console.log(data);
         const token = inMemoryToken ? inMemoryToken.acToken : null;
 
         fetch('/api/todos', {
@@ -308,7 +307,7 @@ export function AuthProvider({ children }) {
 
     function updateTodo(data){
 
-        console.log(data);
+        //console.log(data);
         const token = inMemoryToken ? inMemoryToken.acToken : null;
 
         fetch('/api/todos', {

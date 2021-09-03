@@ -1,7 +1,7 @@
 .container {
   margin: auto;
   text-align: center;
-  height: 100vh;
+  height: 100%;
 }
 
 .haveLoading {
@@ -151,7 +151,7 @@ header svg {
 
 .sideBarTodo{
   position: relative;
-  height: 85vh;
+  height: auto;
   background-color: #f1f1f1;
   display: none;
   margin-top: 4.5%;
@@ -188,7 +188,7 @@ header svg {
   border-radius: 5px;
  }
 
- .sideBarTodo .list .li svg:active{
+ .sideBarTodo .list .li .minMenu:active, .sideBarTodo .list .li .minMenu:hover{
   background-color: #787a80;
   color: white;
  }
@@ -240,8 +240,7 @@ header svg {
 .whiteBoard {
   margin: 7% 15%;
   width: 65%;
-  display: block;
-  overflow: hidden;
+ display: block;
 }
 
 .whiteBoard .updateBtn {
@@ -255,25 +254,106 @@ header svg {
   padding: 5px;
 }
 
-.whiteBoard .title input{
-  font-size: 30px;
+.whiteBoard .tips{
+  display: block;
+  color: #0e0950;
+  font-size: 18px;
+}
+
+.whiteBoard .main{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
+  height: auto;
+}
+
+.whiteBoard .main .title{
+  margin-top: 2%;
+}
+
+
+.whiteBoard .main .title textarea{
+  font-size: 30px;
+  resize: none;
   border: none;
   font-weight: 700;
   border-bottom: #eee 1px solid;
+  width: 600px;
+  min-height: 50px;
+  white-space: pre-wrap;
 }
 
-.whiteBoard .contextList {
-  margin-top: 5px;
+.whiteBoard .main .contextList{
+  margin: 20px auto;
 }
 
-.whiteBoard .contextList .context input{
-  margin-bottom: 5px;
+.whiteBoard .main .contextList .context{
+  display: flex;
+  flex-direction: row;
+  margin: 30px auto;
+}
+
+
+
+.whiteBoard .main .contextList .context .contextText{
+  word-break: break-word;
+  box-sizing: border-box;
+}
+
+.whiteBoard .main .contextList .context .contextText > textarea {
+  overflow: hidden;
+  height: 100%;
   border: none;
   border-bottom: #eee 1px solid;
-  font-size: 15px;
-  width: 100%;
+  font-size: 16px;
+  width: 600px;
+  white-space: pre-wrap;
+  resize: none;
 }
+
+.whiteBoard .main .contextList .context .contextText > div {
+  padding-bottom: 1.5em; /* A bit more than one additional line of text. */ 
+  visibility: hidden;
+}
+
+
+.whiteBoard .main .contextList .context .contextMenu{
+  width: 20px;
+  height: 20px;
+}
+
+.whiteBoard .main .contextList .context .contextActionList{
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background-color: #eee;
+  width: 66px;
+  height: 80px;
+  padding: 2px 5px;
+}
+
+.whiteBoard .main .contextList .context .contextActionList div {
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+}
+
+.whiteBoard .main .contextList .context .contextActionList div:hover, .whiteBoard .main .contextList .context .contextActionList div:active{
+  background-color: darkblue;
+  color: white;
+}
+
+.whiteBoard .main .contextList .context svg {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+.whiteBoard .main .contextList .context svg:hover, .whiteBoard .main .contextList .context svg:active{
+  background-color: #787a80;
+  color: #eee;
+}
+
 
 .loader {
   border: 16px solid #f3f3f3;
@@ -317,6 +397,7 @@ header svg {
     width: 20px;
   }
 
+
   .sideBarTodo{
     position: absolute;
     z-index: 5;
@@ -330,8 +411,46 @@ header svg {
 
   .whiteBoard {
     margin: 60px auto;
+    display: block;
+  }
+
+  .whiteBoard .main .title{
+    margin-top: 5%;
+  }
+
+  .whiteBoard .main .title textarea{
+    font-size: 25px;
+    width: 243px;
+    min-height: 45px;
+  }
+
+  .whiteBoard .main .contextList .context .contextText > textarea {
+    font-size: 16px;
+    width: 243px;
+    min-height: 32px;
   }
 
 
   
+}
+
+@media screen and (max-width: 1024px) and (min-width: 768px){
+
+  header{
+    height: 55px;
+  }
+
+  .sideBarTodo{
+    position: fixed;
+    height: 100%;
+  }
+
+  .active{
+    width: 40%;
+  }
+
+  .whiteBoard {
+    margin: 9% auto;
+  }
+
 }

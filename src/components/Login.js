@@ -40,7 +40,7 @@ export default function Login() {
             return Promise.reject(res); 
             })
             .then(data => {
-                console.log('Success:', data);
+                //console.log('Success:', data);
                 // Do something the token in the login method
                 login({data});
                 history.push('/');
