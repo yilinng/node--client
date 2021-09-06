@@ -2,31 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { v4 as uuidv4 } from 'uuid';
 import ContextAction from './Todo/ContextAction';
+import TextareaAutosize from 'react-textarea-autosize';
 
-export default function SingleTodo({certainTodo}) {
+export default function SingleTodo({certainTodo, handleSidebarBlur}) {
 
     const { updateTodo } = useAuth();
     const [title, setTitle] = useState(certainTodo[0]?.title);
     const [contexts, setContexts] = useState([]);
     const [loading, setLoading] = useState(false);
     const [contextAction, setContextaction] = useState(-1);
-    const [width, setWidth] = useState(window.innerWidth);
-
-    
-    //detect mobile
-    function handleWindowSizeChange() {
-
-        setWidth(window.innerWidth);
-    }
-
-    useEffect(() => {
-        window.addEventListener('resize', handleWindowSizeChange);
-        return () => {
-            window.removeEventListener('resize', handleWindowSizeChange);
-        }
-    }, []);
-
-    let isMobile = (width <= 768);
 
     const titleKeyDown = (e) => {
         if(e.key === 'Enter'){
@@ -79,13 +63,7 @@ export default function SingleTodo({certainTodo}) {
     // context mutation
     const handleChange = (e) => {
 
-        //const textCopy = e.target.nextSibling;
-        //const textArea = e.target.value;
-        //textCopy.innerHTML = textArea.replace(/\n/g, '<br/>')
         //change focus
-        e.target.style.height = '';
-        e.target.style.height = e.target.scrollHeight + "px";
-        console.log(e.target.style.height)
         const certainRow = e.target.parentElement.parentElement;
 
         //find index from dom HTMLCollection
@@ -131,36 +109,10 @@ export default function SingleTodo({certainTodo}) {
         setTitle(e.target.value)
     }
 
-    // title height revise
-    function revise (element){
-
-        if(isMobile){
-
-        if(element < 18) return 50
-
-        if(element < 35) return 70
-
-        if(element < 51) return 90
-
-        if(element < 68) return 120
-
-        if(element < 80) return 130
-
-        if(element < 100) return 210
-
-        return element * 2
-
-        }else{
-           if(element < 20) return 50
-
-           if(element < 68) return 110
-
-           return element * 1.5
-        }
-    }
+  
 
     return (
-        <div className="whiteBoard">
+        <div className="whiteBoard" onClick={handleSidebarBlur}>
             <div className="btntips" onClick={handleBlur}>
                 <button className="updateBtn" disabled={loading} onClick={handleUpdate}>Update</button>
                 <span className="tips">tips: create a new line when press "Enter" key</span>
@@ -169,8 +121,8 @@ export default function SingleTodo({certainTodo}) {
             <div className="main">
 
                 <div className="title" onClick={handleBlur}>
-                    <textarea name="title"
-                    defaultValue={ title } style={{height: title ? revise(title.length) : '50px'}}  
+                    <TextareaAutosize name="title" 
+                    defaultValue={ title } 
                     //defaultValue only works for the initial load,
                     //You can get around this if you need to by passing a key to the wrapper component
                    placeholder="Title..." onChange={(handleTitleHight)} onKeyDown={titleKeyDown}/>
@@ -191,10 +143,9 @@ export default function SingleTodo({certainTodo}) {
                             </div>
 
                             <div className="contextText" onClick={handleBlur}>
-                                <textarea
+                                <TextareaAutosize 
                                 defaultValue={context} 
                                 placeholder="Context..." onChange={handleChange} onKeyUp={contextKeyDown}/>
-                                <div className="textCopy"></div>
                             </div>
 
                         </div>

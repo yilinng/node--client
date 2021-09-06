@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect} from 'react';
+import React, { useContext, useState, useEffect, useCallback} from 'react';
 import { useHistory } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
@@ -118,7 +118,7 @@ export function AuthProvider({ children }) {
 
     }
 
-    function getToken(){
+    const getToken = useCallback(() => {
         
        const cookies = Cookies.get('auth');
        const token = inMemoryToken ? {token: inMemoryToken.token} : null;
@@ -152,10 +152,10 @@ export function AuthProvider({ children }) {
             
         }
       
-    }
+    },[])
 
     //check private source and setHeader when match token
-    function getUser(){
+    const getUser = useCallback(() =>{
         
         const authCookie = Cookies.get('auth');
         const token = inMemoryToken ? inMemoryToken.acToken : null;
@@ -200,7 +200,7 @@ export function AuthProvider({ children }) {
         getToken();
     }, 20*60*1000 -10000)
     
-    }
+    },[currentUser, getToken])
 
     function updateUser(data){
         
@@ -388,7 +388,7 @@ export function AuthProvider({ children }) {
             getUser();
         } 
        
-    }, [])
+    }, [getUser])
 
   
    

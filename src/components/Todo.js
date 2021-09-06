@@ -11,8 +11,7 @@ export default function Todo() {
     const [loading, setLoading] = useState(false);
     const [linkId, setLinkId] = useState('');
     const [showSide, setShowSide] = useState(false);
-    const [showAction, setShowAction] = useState([]);
-    const [actionNumber, setActionNumber] = useState(0);
+    const [showAction, setShowAction] = useState(-1);
     const [width, setWidth] = useState(window.innerWidth)
 
     
@@ -52,41 +51,17 @@ export default function Todo() {
       setLinkId(id);
       setLoading(true);
 
-      //console.log(data);
       await addTodo(data);
       await getTodo();
       
       setLoading(false);
       
-      showAction[filterTodos.length] = false;
-      setShowAction(showAction);
+      setShowAction(-1);
 
     }
-    
-    const handleBlur = (index) => {
-      //To have Onblur on an element it should receive focus first, 
-      //Div elements don't receive focus by default. You can add tabindex="0"
-      //console.log('on blur');
-      showAction[index] = false;
-      setShowAction(showAction);
-      setActionNumber(actionNumber-1);
-    }
 
-    const HandleAction = (index) => {
-      //filter except index
-      let filterAction = showAction.filter((item, idx) => idx !== index);
-      if(filterAction.includes(true)) return false;
-      
-      if(showAction[index] === false){
-        showAction[index] = true;
-        setShowAction(showAction);
-        setActionNumber(actionNumber+1);
-      }else{
-        showAction[index] = false;
-        setShowAction(showAction);
-        setActionNumber(actionNumber-1)
-      }
-      
+    const handleSidebarBlur = () => {
+      setShowAction(-1)
     }
 
     //sidebar title truncate
@@ -112,20 +87,16 @@ export default function Todo() {
       return input;
      }
 
-   } 
-
-    //useffect work with variable, not work with array
-    useEffect(() => {
-      console.log(showAction, actionNumber)
-    },[actionNumber, showAction])
+   }
+ 
     
     if (!currentUser) {
         return <Redirect to="/login" />;
-      }
+    }
   
     return (
         <div className="container">
-            <header>
+            <header onClick={handleSidebarBlur}>
                 <span className="sideBtn" onClick={() =>setShowSide(!showSide)}>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -144,7 +115,7 @@ export default function Todo() {
         <div className="todo">
          <div className={showSide ? 'sideBarTodo active': 'sideBarTodo'}>
             <div className="list">
-            <h3>{currentUser.user.name} todo</h3>
+            <h3 onClick={handleSidebarBlur}>{currentUser.user.name} todo</h3>
       {
         filterTodos && filterTodos.length > 0 ?
             (
@@ -152,13 +123,13 @@ export default function Todo() {
                 return (
                   <div key={da._id} className="li" onClick={() => setLinkId(da._id)}>
                         <strong>
-                           <span>{  truncate(da.title) || 'Untitle' }</span>
+                           <span onClick={handleSidebarBlur}>{  truncate(da.title) || 'Untitle' }</span>
                         </strong>                         
-                        <span className="minMenu" tabIndex="0" onClick={() => HandleAction(index)} onBlur={() => handleBlur(index)}>
+                        <span className="minMenu" tabIndex="0" onClick={() => setShowAction(index)}>
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
                           </svg>
-                          { showAction[index] === true  ? <Action linkId={linkId}/> : ''}  
+                          { showAction === index  ? <Action linkId={linkId} handleSidebarBlur={handleSidebarBlur}/> : ''}  
                         </span>
                   </div>                                   
                 )
@@ -171,12 +142,12 @@ export default function Todo() {
             )
       }
 
-          <button className="addOne" type="button" disabled={loading} onClick={handleAdd}>+ Add a page</button>
+          <button className="addOne" type="button" disabled={loading} onClick={function(){ handleAdd(); handleSidebarBlur(); }}>+ Add a page</button>
          </div>
             <Link to="/">Cancel</Link>
          </div>
            { linkId && certainTodo && 
-           <SingleTodo certainTodo={certainTodo} key={linkId} /> } 
+           <SingleTodo certainTodo={certainTodo} key={linkId} handleSidebarBlur={handleSidebarBlur}/> } 
         </div>
         </div>
 

@@ -302,7 +302,6 @@ header svg {
 }
 
 .whiteBoard .main .contextList .context .contextText > textarea {
-  overflow: hidden;
   height: 100%;
   border: none;
   border-bottom: #eee 1px solid;
@@ -311,6 +310,7 @@ header svg {
   white-space: pre-wrap;
   resize: none;
 }
+
 
 .whiteBoard .main .contextList .context .contextText > div {
   padding-bottom: 1.5em; /* A bit more than one additional line of text. */ 
@@ -331,6 +331,7 @@ header svg {
   width: 66px;
   height: 80px;
   padding: 2px 5px;
+  border: 1px solid	#C0C0C0;
 }
 
 .whiteBoard .main .contextList .context .contextActionList div {
