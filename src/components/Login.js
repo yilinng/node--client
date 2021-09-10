@@ -22,7 +22,7 @@ export default function Login() {
         setError('');
         setLoading(true)
         
-        fetch("/api/users/login", {
+        fetch(process.env.REACT_APP_NOT_SECRET_CODE + "/api/users/login", {
             method: "POST",
             credentials: 'include',
             headers: {
@@ -46,7 +46,6 @@ export default function Login() {
                 history.push('/');
             })
             .catch(err => {
-                console.log(err.status, err.statusText);
                 err.json().then((data) => {
                 //get error message    
                     console.log(data);
@@ -54,7 +53,6 @@ export default function Login() {
                 setLoading(false)
                 })
             });         
-        
     }
 
     if(currentUser){

@@ -62,7 +62,7 @@ export function AuthProvider({ children }) {
         const authCookies = Cookies.get('auth');
 
         if(authCookies){
-            fetch('/api/users/get-cookies', {
+            fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/users/get-cookies', {
                 method: 'GET',
                 headers: {
                     "Content-Type": "application/json"
@@ -92,7 +92,7 @@ export function AuthProvider({ children }) {
     function logout(){
         
 
-        fetch('/api/users/logout', {
+        fetch(process.env.REACT_APP_NOT_SECRET_CODE +'/api/users/logout', {
         method: 'DELETE',
         headers: {
             "Content-Type": "application/json"
@@ -125,7 +125,7 @@ export function AuthProvider({ children }) {
         
         if(cookies !== undefined){
           
-            fetch('/api/users/token', {
+            fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/users/token', {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json" 
@@ -162,7 +162,7 @@ export function AuthProvider({ children }) {
 
         if(authCookie){
 
-            fetch('/api/users', {
+            fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/users', {
                 method: 'GET',
                 headers: {
                     "Content-Type": "application/json", 
@@ -206,7 +206,7 @@ export function AuthProvider({ children }) {
         
         const token = inMemoryToken ? inMemoryToken.acToken : null;
 
-        fetch("api/users/update-profile", {
+        fetch(process.env.REACT_APP_NOT_SECRET_CODE + "/api/users/update-profile", {
             method: "PUT",
             credentials: "include",
             headers: {
@@ -249,7 +249,7 @@ export function AuthProvider({ children }) {
         const token = inMemoryToken ? inMemoryToken.acToken : null;
 
         if(authCookie){
-            fetch("/api/todos", {
+            fetch(process.env.REACT_APP_NOT_SECRET_CODE + "/api/todos", {
                 method: 'GET',
                     headers: {
                         "Content-Type": "application/json", 
@@ -275,7 +275,7 @@ export function AuthProvider({ children }) {
 
         const token = inMemoryToken ? inMemoryToken.acToken : null;
 
-        fetch('/api/todos', {
+        fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/todos', {
             method: 'POST', // or 'PUT'
             credentials: "include",
             headers: {
@@ -310,7 +310,7 @@ export function AuthProvider({ children }) {
         //console.log(data);
         const token = inMemoryToken ? inMemoryToken.acToken : null;
 
-        fetch('/api/todos', {
+        fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/todos', {
             method: 'PATCH', // or 'PUT'
             credentials: "include",
             headers: {
@@ -344,7 +344,7 @@ export function AuthProvider({ children }) {
         console.log(data);
         const token = inMemoryToken ? inMemoryToken.acToken : null;
 
-        fetch('/api/todos', {
+        fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/todos', {
             method: 'DELETE', // or 'PUT'
             credentials: "include",
             headers: {
