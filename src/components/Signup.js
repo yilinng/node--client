@@ -31,9 +31,8 @@ export default function Signup() {
         setError("");
         setLoading(true);
 
-        fetch("api/users/signup", {
+        fetch(process.env.REACT_APP_NOT_SECRET_CODE + "/api/users/signup", {
             method: "POST",
-            credentials: "include",
             headers: {
                 Accept: " application/json",
                 "Content-type": "application/json",
@@ -54,10 +53,8 @@ export default function Signup() {
            history.push("/");
         })
         .catch(err => {
-            console.log(err.status, err.statusText);
             err.json().then((data) => {
             //get error message    
-            console.log(data)
             setError(data.message)
             setLoading(false)
             })

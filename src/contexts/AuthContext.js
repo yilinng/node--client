@@ -1,6 +1,7 @@
-import React, { useContext, useState, useEffect, useCallback} from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import { v4 as uuidv4 } from 'uuid';
 
 let inMemoryToken;
 
@@ -31,13 +32,14 @@ export function AuthProvider({ children }) {
             return {...prevState, user};
         });
 
-        getUser();
+        Cookies.set('auth', uuidv4())
         
+        console.log(Cookies.get('auth'))
+        getTodo();
     }
 
     function login(data) {
 
-      
         const { accessToken, newToken, user } = data.data;
         //jwt timetstamp is ufc-base so have to according to timestamp to plus or cut
         inMemoryToken = {
@@ -53,47 +55,18 @@ export function AuthProvider({ children }) {
         //const event = new Date(inMemoryToken.expiry);
 
         //console.log(event, inMemoryToken.expiry);
-        getUser();
-
+        Cookies.set('auth', uuidv4()) 
+       
+        getTodo();
     }
 
-    function getCookies(){
-
-        const authCookies = Cookies.get('auth');
-
-        if(authCookies){
-            fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/users/get-cookies', {
-                method: 'GET',
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            }) 
-            .then(res => {
-                //check res.ok
-                if(res.ok){
-                    return res.json()
-                }
-                //reject instead of throw
-                return Promise.reject(res);
-            })
-            .then(data => {
-                inMemoryToken = {
-                    token: data.cookies.retoken,
-                    acToken: data.cookies.token
-                }
-            })
-            .finally(() => {
-                console.log(inMemoryToken)
-            });
-        }
-      
-    }
+   
 
     function logout(){
-        
 
         fetch(process.env.REACT_APP_NOT_SECRET_CODE +'/api/users/logout', {
         method: 'DELETE',
+        credentials: 'include',
         headers: {
             "Content-Type": "application/json"
         },
@@ -110,8 +83,9 @@ export function AuthProvider({ children }) {
         .then(data =>console.log(data))
         .finally(() => {
             setCurrentUser('');
+            Cookies.remove('auth')
         });
-    
+        
     }
 
     function resetPassword(email){
@@ -127,10 +101,10 @@ export function AuthProvider({ children }) {
           
             fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/users/token', {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
                     "Content-Type": "application/json" 
                 },
-                withCredentials: true,
                 body: JSON.stringify(token),
                 })
                 .then(res => {
@@ -155,20 +129,16 @@ export function AuthProvider({ children }) {
     },[])
 
     //check private source and setHeader when match token
-    const getUser = useCallback(() =>{
-        
-        const authCookie = Cookies.get('auth');
-        const token = inMemoryToken ? inMemoryToken.acToken : null;
-
-        if(authCookie){
+    const getUser = useCallback(() => {
+        return new Promise((resolve, reject) => {
+            const token = inMemoryToken ? inMemoryToken.acToken : null;
 
             fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/users', {
                 method: 'GET',
+                credentials: 'include',
                 headers: {
                     "Content-Type": "application/json", 
                     'Authorization': 'Bearer ' + token},
-                withCredentials: true,
-                credentials: 'include',
                 })
                 .then(res => {
                     //check res.ok
@@ -184,23 +154,24 @@ export function AuthProvider({ children }) {
                             return {...prevState, user: data.user};
                         });
                     };
-                //when getUser finshed and run getTodo    
-                 getTodo();
+                resolve(data)
+                //when getUser finshed and run getTodo
+                getTodo();                               
                 })      
-                .catch(err => console.log(err)); 
-            }
-        
+                .catch(err => reject(err)); 
                
         setLoading(false);
-
-              
+      
     //accessToken live 20m!
     //when timeout have to use gettoken(); get newtoken       
     setTimeout(() => {
         getToken();
     }, 20*60*1000 -10000)
-    
+
+    })
+      
     },[currentUser, getToken])
+
 
     function updateUser(data){
         
@@ -208,11 +179,10 @@ export function AuthProvider({ children }) {
 
         fetch(process.env.REACT_APP_NOT_SECRET_CODE + "/api/users/update-profile", {
             method: "PUT",
-            credentials: "include",
+            credentials: 'include',
             headers: {
                 "Content-Type": "application/json", 
                 'Authorization': 'Bearer ' + token},
-            withCredentials: true,
             body: JSON.stringify(data) 
         })
         .then(res => {
@@ -251,11 +221,10 @@ export function AuthProvider({ children }) {
         if(authCookie){
             fetch(process.env.REACT_APP_NOT_SECRET_CODE + "/api/todos", {
                 method: 'GET',
-                    headers: {
-                        "Content-Type": "application/json", 
-                        'Authorization': 'Bearer ' + token},
-                    withCredentials: true,
-                    credentials: 'include'
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "application/json", 
+                    'Authorization': 'Bearer ' + token},                         
                 })
                 .then(res => {
                     //check res.ok
@@ -277,11 +246,10 @@ export function AuthProvider({ children }) {
 
         fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/todos', {
             method: 'POST', // or 'PUT'
-            credentials: "include",
+            credentials: 'include',
             headers: {
                 "Content-Type": "application/json", 
-                'Authorization': 'Bearer ' + token},
-            withCredentials: true,
+                'Authorization': 'Bearer ' + token},       
             body: JSON.stringify(data) 
         })
             .then(res => {
@@ -312,11 +280,10 @@ export function AuthProvider({ children }) {
 
         fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/todos', {
             method: 'PATCH', // or 'PUT'
-            credentials: "include",
+            credentials: 'include',
             headers: {
                 "Content-Type": "application/json", 
-                'Authorization': 'Bearer ' + token},
-            withCredentials: true,
+                'Authorization': 'Bearer ' + token},         
             body: JSON.stringify(data) 
         })
             .then(res => {
@@ -346,11 +313,10 @@ export function AuthProvider({ children }) {
 
         fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/todos', {
             method: 'DELETE', // or 'PUT'
-            credentials: "include",
+            credentials: 'include',
             headers: {
                 "Content-Type": "application/json", 
-                'Authorization': 'Bearer ' + token},
-            withCredentials: true,
+                'Authorization': 'Bearer ' + token},              
             body: JSON.stringify(data) 
         })
             .then(res => {
@@ -376,18 +342,36 @@ export function AuthProvider({ children }) {
 
 
     useEffect(() => {
-        
+
         const authCookies = Cookies.get('auth');
+        
+        async function getCookies(){
+    
+            const response = await fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/users/get-cookies', {
+                    method: 'GET',
+                    credentials: 'include',
+                })
+            const data = await response.json();
+
+            console.log('Before promise call.', data)
+            
+            if(data === 'you have to login') return console.log('no cookies...')
+            
+            inMemoryToken = {
+                token: data.cookies.retoken,
+                acToken: data.cookies.token
+                }
+            //3. Await for the first function to complete
+           const result = await getUser()
+                
+           console.log('Promise resolved: ' + result)
+           
+        }
+        
         if(authCookies) {
-            getCookies();
-            //when get cookies ,wait 500ms to get data
-            setTimeout(() => {
-                getUser();
-            }, 500);
-        }else{
-            getUser();
+            getCookies();          
         } 
-       
+        setLoading(false)
     }, [getUser])
 
   

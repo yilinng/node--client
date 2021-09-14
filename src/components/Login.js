@@ -4,6 +4,7 @@ import { Link, Redirect, useHistory } from 'react-router-dom';
 import Spinner from './ui/Spinner';
 
 export default function Login() {
+
     const emailRef = useRef('')
     const passwordRef = useRef('')
     const { currentUser, login } = useAuth()
@@ -24,7 +25,6 @@ export default function Login() {
         
         fetch(process.env.REACT_APP_NOT_SECRET_CODE + "/api/users/login", {
             method: "POST",
-            credentials: 'include',
             headers: {
                 Accept: "application/json",
                 "Content-Type": "application/json",
@@ -62,6 +62,7 @@ export default function Login() {
     return (
         <div className="container">
             {loading && <Spinner/>}
+
         <div className={loading ? "login haveLoading" : "login"}>
             <div className="loginBody">
                 <h2>Log In</h2>
