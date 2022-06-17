@@ -1,9 +1,6 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import { v4 as uuidv4 } from 'uuid';
-
-let inMemoryToken;
 
 const AuthContext = React.createContext();
 
@@ -20,21 +17,15 @@ export function AuthProvider({ children }) {
 
     function signup(data) {
         // { sourceProperty: targetVariable }
-        const { accessToken, newToken, newUser: user} = data.data;
+        const { accessToken, newToken, newUser: user } = data.data;
 
-        inMemoryToken = {
-            token: newToken.refresh_token,
-            expiry: newToken.expires_at,
-            acToken:  accessToken
-        }
-        
         setCurrentUser(prevState => {
             return {...prevState, user};
         });
 
-        Cookies.set('auth', uuidv4())
-        
-        console.log(Cookies.get('auth'))
+        Cookies.set('auth', accessToken)
+        Cookies.set('reauth', newToken.refresh_token) 
+
         getTodo();
     }
 
@@ -42,11 +33,6 @@ export function AuthProvider({ children }) {
 
         const { accessToken, newToken, user } = data.data;
         //jwt timetstamp is ufc-base so have to according to timestamp to plus or cut
-        inMemoryToken = {
-            token: newToken.refresh_token,
-            expiry: newToken.expires_at,
-            acToken: accessToken
-        }
         
         setCurrentUser(prevState => {
             return {...prevState, user};
@@ -55,7 +41,8 @@ export function AuthProvider({ children }) {
         //const event = new Date(inMemoryToken.expiry);
 
         //console.log(event, inMemoryToken.expiry);
-        Cookies.set('auth', uuidv4()) 
+        Cookies.set('auth', accessToken)
+        Cookies.set('reauth', newToken.refresh_token) 
        
         getTodo();
     }
@@ -64,13 +51,15 @@ export function AuthProvider({ children }) {
 
     function logout(){
 
+        const cookies = Cookies.get('reauth') ? Cookies.get('reauth'): null;
+
         fetch(process.env.REACT_APP_NOT_SECRET_CODE +'/api/users/logout', {
         method: 'DELETE',
         credentials: 'include',
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({token: inMemoryToken.token})
+        body: JSON.stringify({ token: cookies })
         })
         .then(res => {
             //check res.ok
@@ -80,24 +69,20 @@ export function AuthProvider({ children }) {
             //reject instead of throw
             return Promise.reject(res);
         })
-        .then(data =>console.log(data))
-        .finally(() => {
+        .then(data =>{
             setCurrentUser('');
-            Cookies.remove('auth')
-        });
+            Cookies.remove('auth');
+            Cookies.remove('reauth') 
+        })
+        .catch(error => console.error('Error:', error));
         
-    }
-
-    function resetPassword(email){
-
     }
 
     const getToken = useCallback(() => {
         
-       const cookies = Cookies.get('auth');
-       const token = inMemoryToken ? {token: inMemoryToken.token} : null;
+       const cookies = Cookies.get('reauth') ? Cookies.get('reauth'): null;
         
-        if(cookies !== undefined){
+        if(cookies !== null){
           
             fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/users/token', {
                 method: 'POST',
@@ -105,7 +90,7 @@ export function AuthProvider({ children }) {
                 headers: {
                     "Content-Type": "application/json" 
                 },
-                body: JSON.stringify(token),
+                body: JSON.stringify({ token: cookies }),
                 })
                 .then(res => {
                     //check res.ok
@@ -115,7 +100,7 @@ export function AuthProvider({ children }) {
                     //reject instead of throw
                     return Promise.reject(res);
                 })
-                .then(data => console.log(data))      
+                .then(data => Cookies.set('auth', data.accessToken))      
                 .catch(error => console.error('Error:', error));
     
                 
@@ -128,61 +113,17 @@ export function AuthProvider({ children }) {
       
     },[])
 
-    //check private source and setHeader when match token
-    const getUser = useCallback(() => {
-        return new Promise((resolve, reject) => {
-            const token = inMemoryToken ? inMemoryToken.acToken : null;
-
-            fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/users', {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    "Content-Type": "application/json", 
-                    'Authorization': 'Bearer ' + token},
-                })
-                .then(res => {
-                    //check res.ok
-                    if(res.ok){
-                        return res.json()
-                    }
-                    //reject instead of throw
-                    return Promise.reject(res);
-                })
-                .then(data => {
-                    if(!currentUser){
-                        setCurrentUser(prevState => {
-                            return {...prevState, user: data.user};
-                        });
-                    };
-                resolve(data)
-                //when getUser finshed and run getTodo
-                getTodo();                               
-                })      
-                .catch(err => reject(err)); 
-               
-        setLoading(false);
-      
-    //accessToken live 20m!
-    //when timeout have to use gettoken(); get newtoken       
-    setTimeout(() => {
-        getToken();
-    }, 20*60*1000 -10000)
-
-    })
-      
-    },[currentUser, getToken])
-
 
     function updateUser(data){
         
-        const token = inMemoryToken ? inMemoryToken.acToken : null;
+        const cookies = Cookies.get('auth') ? Cookies.get('auth'): null;
 
         fetch(process.env.REACT_APP_NOT_SECRET_CODE + "/api/users/update-profile", {
             method: "PUT",
             credentials: 'include',
             headers: {
                 "Content-Type": "application/json", 
-                'Authorization': 'Bearer ' + token},
+                'Authorization': 'Bearer ' + cookies},
             body: JSON.stringify(data) 
         })
         .then(res => {
@@ -216,7 +157,6 @@ export function AuthProvider({ children }) {
     //when getUser finish, run getTodo
     function getTodo(){
         const authCookie = Cookies.get('auth');
-        const token = inMemoryToken ? inMemoryToken.acToken : null;
 
         if(authCookie){
             fetch(process.env.REACT_APP_NOT_SECRET_CODE + "/api/todos", {
@@ -224,7 +164,7 @@ export function AuthProvider({ children }) {
                 credentials: 'include',
                 headers: {
                     "Content-Type": "application/json", 
-                    'Authorization': 'Bearer ' + token},                         
+                    'Authorization': 'Bearer ' + authCookie},                         
                 })
                 .then(res => {
                     //check res.ok
@@ -242,14 +182,14 @@ export function AuthProvider({ children }) {
 
     function addTodo(data){
 
-        const token = inMemoryToken ? inMemoryToken.acToken : null;
+        const cookies = Cookies.get('auth') ? Cookies.get('auth'): null;
 
         fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/todos', {
             method: 'POST', // or 'PUT'
             credentials: 'include',
             headers: {
                 "Content-Type": "application/json", 
-                'Authorization': 'Bearer ' + token},       
+                'Authorization': 'Bearer ' + cookies},       
             body: JSON.stringify(data) 
         })
             .then(res => {
@@ -268,22 +208,21 @@ export function AuthProvider({ children }) {
              }, 500)
               
             })
-            .catch((error) => {
-            console.error('Error:', error);
-            });
+            .catch(error => 
+            console.error('Error:', error));
     }
 
     function updateTodo(data){
 
         //console.log(data);
-        const token = inMemoryToken ? inMemoryToken.acToken : null;
+        const cookies = Cookies.get('auth') ? Cookies.get('auth'): null;
 
         fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/todos', {
             method: 'PATCH', // or 'PUT'
             credentials: 'include',
             headers: {
                 "Content-Type": "application/json", 
-                'Authorization': 'Bearer ' + token},         
+                'Authorization': 'Bearer ' + cookies},         
             body: JSON.stringify(data) 
         })
             .then(res => {
@@ -302,21 +241,20 @@ export function AuthProvider({ children }) {
              }, 500)
               
             })
-            .catch((error) => {
-            console.error('Error:', error);
-            });
+            .catch(error => 
+            console.error('Error:', error));
     }
 
     const deleteTodo = (data) => {
-        console.log(data);
-        const token = inMemoryToken ? inMemoryToken.acToken : null;
+
+        const cookies = Cookies.get('auth') ? Cookies.get('auth'): null;
 
         fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/todos', {
             method: 'DELETE', // or 'PUT'
             credentials: 'include',
             headers: {
                 "Content-Type": "application/json", 
-                'Authorization': 'Bearer ' + token},              
+                'Authorization': 'Bearer ' + cookies},              
             body: JSON.stringify(data) 
         })
             .then(res => {
@@ -335,9 +273,8 @@ export function AuthProvider({ children }) {
              }, 500)
               
             })
-            .catch((error) => {
-            console.error('Error:', error);
-            });
+            .catch(error => 
+            console.error('Error:', error));
     }
 
 
@@ -345,34 +282,51 @@ export function AuthProvider({ children }) {
 
         const authCookies = Cookies.get('auth');
         
-        async function getCookies(){
-    
-            const response = await fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/users/get-cookies', {
-                    method: 'GET',
-                    credentials: 'include',
-                })
-            const data = await response.json();
+        //check private source and setHeader when match token
+        const getUser = () => {
 
-            console.log('Before promise call.', data)
-            
-            if(data === 'you have to login') return console.log('no cookies...')
-            
-            inMemoryToken = {
-                token: data.cookies.retoken,
-                acToken: data.cookies.token
-                }
-            //3. Await for the first function to complete
-           const result = await getUser()
-                
-           console.log('Promise resolved: ' + result)
-           
-        }
+            fetch(process.env.REACT_APP_NOT_SECRET_CODE + '/api/users', {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "application/json", 
+                    'Authorization': 'Bearer ' + authCookies },
+                })
+                .then(res => {
+                    //check res.ok
+                    if(res.ok){
+                        return res.json()
+                    }
+                    //reject instead of throw
+                    return Promise.reject(res);
+                })
+                .then(data => {
+                    if(!currentUser){
+                        setCurrentUser(prevState => {
+                            return {...prevState, user: data.user};
+                        });
+                    };
+                //when getUser finshed and run getTodo
+                getTodo();                               
+                })      
+                .catch(err => console.log(err)); 
+               
+        setLoading(false);
+      
+    //accessToken live 20m!
+    //when timeout have to use gettoken(); get newtoken       
+    setTimeout(() => {
+        getToken();
+    }, 20*60*1000 -10000)   
+    }
+
+    console.log(currentUser, 'currentUser')
         
-        if(authCookies) {
-            getCookies();          
-        } 
-        setLoading(false)
-    }, [getUser])
+    if(authCookies) {
+        getUser();          
+    } 
+    setLoading(false)
+    }, [currentUser, getToken])
 
   
    
@@ -384,7 +338,6 @@ export function AuthProvider({ children }) {
         login,
         signup,
         logout,
-        resetPassword,
         updateUser,
         getTodo,
         todos,

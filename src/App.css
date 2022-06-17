@@ -13,9 +13,15 @@ form {
   display: block;
 }
 
+label {
+  display: inline-block;
+  width: 100px;
+  margin: auto;
+}
+
 form input {
   height: 40px;
-  width: 50%;
+  width: 400px;
   border: none;
   border-bottom: 2px #101113 solid;
   background: none;
@@ -431,7 +437,9 @@ header svg {
     min-height: 32px;
   }
 
-
+  form input {
+    width: 170px;
+  }
   
 }
 
@@ -452,6 +460,10 @@ header svg {
 
   .whiteBoard {
     margin: 9% auto;
+  }
+
+  form input {
+    width: 250px;
   }
 
 }

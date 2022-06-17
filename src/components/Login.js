@@ -48,7 +48,7 @@ export default function Login() {
             .catch(err => {
                 err.json().then((data) => {
                 //get error message    
-                    console.log(data);
+                console.log(data);
                 setError(data.message);
                 setLoading(false)
                 })
