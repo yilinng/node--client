@@ -57,7 +57,8 @@ export function AuthProvider({ children }) {
         method: 'DELETE',
         credentials: 'include',
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            'Authorization': 'Bearer ' + cookies
         },
         body: JSON.stringify({ token: cookies })
         })
@@ -123,7 +124,8 @@ export function AuthProvider({ children }) {
             credentials: 'include',
             headers: {
                 "Content-Type": "application/json", 
-                'Authorization': 'Bearer ' + cookies},
+                'Authorization': 'Bearer ' + cookies
+            },
             body: JSON.stringify(data) 
         })
         .then(res => {
