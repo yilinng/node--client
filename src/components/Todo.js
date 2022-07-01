@@ -44,6 +44,7 @@ export default function Todo() {
       const data = {
             _id: id,
             title: "",
+            context:[""],
             username: currentUser.user.name,
             user_id: currentUser.user._id
       };

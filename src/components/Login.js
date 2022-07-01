@@ -66,7 +66,7 @@ export default function Login() {
         <div className={loading ? "login haveLoading" : "login"}>
             <div className="loginBody">
                 <h2>Log In</h2>
-                {error && <span>{error}</span>}
+                {error && <span className="error">{error}</span>}
                 <form onSubmit={handleSubmit}>
                     <div className="email">
                         <label htmlFor="email">Email: </label>

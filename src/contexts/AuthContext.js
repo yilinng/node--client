@@ -9,7 +9,7 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }) {
-    const [currentUser, setCurrentUser] = useState();
+    const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState('');
     const [todos, setTodos] = useState('');
@@ -47,11 +47,11 @@ export function AuthProvider({ children }) {
         getTodo();
     }
 
-   
 
     function logout(){
 
-        const cookies = Cookies.get('reauth') ? Cookies.get('reauth'): null;
+        //const recookies = Cookies.get('reauth') ? Cookies.get('reauth'): null;
+        const cookies = Cookies.get('reauth') ? Cookies.get('auth'): null;
 
         fetch(process.env.REACT_APP_NOT_SECRET_CODE +'/api/users/logout', {
         method: 'DELETE',
@@ -60,7 +60,7 @@ export function AuthProvider({ children }) {
             "Content-Type": "application/json",
             'Authorization': 'Bearer ' + cookies
         },
-        body: JSON.stringify({ token: cookies })
+        body: JSON.stringify({ email: currentUser.user.email })
         })
         .then(res => {
             //check res.ok

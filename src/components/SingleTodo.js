@@ -144,8 +144,9 @@ export default function SingleTodo({certainTodo, handleSidebarBlur}) {
 
                             <div className="contextText" onClick={handleBlur}>
                                 <TextareaAutosize 
+                                name="context"
                                 defaultValue={context} 
-                                placeholder="Context..." onChange={handleChange} onKeyUp={contextKeyDown}/>
+                                placeholder="Content..." onChange={handleChange} onKeyUp={contextKeyDown}/>
                             </div>
 
                         </div>

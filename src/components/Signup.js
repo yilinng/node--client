@@ -73,7 +73,7 @@ export default function Signup() {
           <div className={ loading ? "signup haveLoading": "signup" }>
               <div className="signbody">
                 <h2>Sign up</h2>
-                {error && <span>{error}</span>}
+                {error && <span className="error">{ error }</span>}
                 <form onSubmit={handleSubmit}>
 
                     <div className="name">
