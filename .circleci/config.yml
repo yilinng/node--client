@@ -18,4 +18,4 @@ workflows:
           executor: cypress/base-14
           start: npm start
           wait-on: 'http://localhost:3000'
-          store_artifacts: true          
+              
