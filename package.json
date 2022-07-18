@@ -20,8 +20,8 @@
     "build": "react-scripts build",
     "test": "cypress open",
     "eject": "react-scripts eject",
-    "runHeadless":"./node_modules/.bin/cypress run --headless",
-    "runHeadled":"./node_modules/.bin/cypress run --headed --browser chrome"
+    "runHeadless": "./node_modules/.bin/cypress run --headless",
+    "runHeadled": "./node_modules/.bin/cypress run --headed --browser chrome"
   },
   "eslintConfig": {
     "extends": [
@@ -47,6 +47,7 @@
   },
   "devDependencies": {
     "@testing-library/react": "^12.1.5",
-    "cypress": "^10.3.0"
+    "cypress": "^10.3.0",
+    "dotenv-extended": "^2.9.0"
   }
 }

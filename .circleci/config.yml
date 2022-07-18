@@ -1,23 +1,17 @@
 version: 2
-jobs:
+orbs:
+  # This Orb includes the following:
+  # - checkout current repository
+  # - npm install with caching
+  # - start the server
+  # - wait for the server to respond
+  # - run Cypress tests
+  # - store videos and screenshots as artifacts on CircleCI
+  cypress: cypress-io/cypress@1
+workflows:
   build:
-    docker:
-      - image: cypress/base:14.16.0
-        environment:
-          ## this enables colors in the output
-          TERM: xterm
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - restore_cache:
-          keys: v1-deps-{{ checksum "package-lock.json" }}
-      - run:
-          name: Install Dependencies
-          command: npm install
-      - save_cache:
-          key: v1-deps-{{ checksum "package-lock.json" }}
-          paths: 
-            - node_modules
-      - run: $(npm bin)/cypress run --headless --spec 'cypress/integration/api-tests/users.spec.js'
-      - store_artifacts:
-          path: ~/repo/node--client
+    jobs:
+      - cypress/run:
+        start: npm start
+        wait-on: 'http://localhost:3000'
+        store_artifacts: true 
