@@ -13,6 +13,8 @@ workflows:
   build:
     jobs:
       - cypress/run:
+          yarn: true
+          cache-key: 'yarn-packages-{{ arch }}-{{ checksum "yarn.lock" }}'
           env: 'REACT_APP_NOT_SECRET_CODE=https://express-api-react-notion.vercel.app,CYPRESS_BASE_URL=http://localhost:3000'
           #Runs all Cypress tests on Node 14
           executor: cypress/base-14
