@@ -1,8 +1,12 @@
 const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
+  reporter: 'junit',
+  reporterOptions: {
+    mochaFile: 'cypress/results/output.xml',
+  },
   env: {
-    apiUrl: "http://localhost:3001",
+    apiUrl: "https://express-api-react-notion.vercel.app",
     token: "",
     reToken: ""
   },
@@ -10,7 +14,8 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       // implement node event listeners here
     },
-    baseUrl: 'http://localhost:3000/',
+    baseUrl: process.env.REACT_APP_NOT_SECRET_CODE,
     specPattern: "cypress/**/*.spec.{js,jsx,ts,tsx}",
-  },
+  }, 
+  "integrationFolder": "cypress/integration/api-tests"
 });
