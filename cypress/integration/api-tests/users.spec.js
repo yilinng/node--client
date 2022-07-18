@@ -1,7 +1,7 @@
 describe('user api testing', () => {
 
-  it('user signup - POST', () => {
-    cy.signup()
+  it('user login - POST', () => {
+    cy.login()
   })
 
   it('user logout - DELETE', () => {

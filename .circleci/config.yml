@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 orbs:
   # This Orb includes the following:
   # - checkout current repository
@@ -8,21 +8,13 @@ orbs:
   # - run Cypress tests
   # - store videos and screenshots as artifacts on CircleCI
   #https://github.com/cypress-io/circleci-orb/blob/master/docs/examples.md
-  cypress: cypress-io/cypress@1.29.0
-  node: circleci/node@1.1
-
-executors:
-  with-chrome:
-    docker:
-      - image: 'cypress/browsers:node14.17.6-chrome100-ff98'
-
+  cypress: cypress-io/cypress@1
 workflows:
-  version: 2
-  test:
+  build:
     jobs:
       - cypress/run:
+          yarn: true
+          cache-key: 'yarn-packages-{{ arch }}-{{ checksum "yarn.lock" }}'
           env: 'REACT_APP_NOT_SECRET_CODE=https://express-api-react-notion.vercel.app,CYPRESS_BASE_URL=http://localhost:3000'
-          executor: cypress/base-14
-          start: npm start
+          start: yarn start
           wait-on: 'http://localhost:3000'
-          store_artifacts: true          

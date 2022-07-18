@@ -50,6 +50,31 @@ Cypress.Commands.add("signup", () => {
 
 })
 
+Cypress.Commands.add("login", () => {
+  cy.request({
+    method: 'POST',
+    form: true,
+    url: Cypress.env("apiUrl") + "/api/users/login",
+    headers: {
+      'Content-Type': 'application/json'  
+    },
+    body: { 
+      "email": "test123@test.com", 
+      "password": "test123"
+     }
+  })
+  .as('signupResponse')
+  .then(response => {
+    Cypress.env('token', response.body.accessToken); // either this or some global var but remember that this will only work in one test case
+    Cypress.env('retoken', response.body.refreshToken); // either this or some global var but remember that this will only work in one test case
+    console.log(response)
+    return response;
+  })
+  .its('status')
+  .should('eq', 201);
+
+})
+
 Cypress.Commands.add("logout", () => {
   cy.request({
     method: 'DELETE',
