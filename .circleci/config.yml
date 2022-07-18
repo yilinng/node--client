@@ -17,4 +17,9 @@ workflows:
           cache-key: 'yarn-packages-{{ arch }}-{{ checksum "yarn.lock" }}'
           env: 'REACT_APP_NOT_SECRET_CODE=https://express-api-react-notion.vercel.app,CYPRESS_BASE_URL=http://localhost:3000'
           start: yarn start
+<<<<<<< HEAD
           wait-on: 'http://localhost:3000'
+=======
+          wait-on: 'http://localhost:3000'
+              
+>>>>>>> e4a83fa29f6a07f970fcc8fb8e74f63696bc6847
