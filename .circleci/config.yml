@@ -18,6 +18,6 @@ jobs:
           key: v1-deps-{{ checksum "package-lock.json" }}
           paths: 
             - node_modules
-      - run: npm runHeadless --spec 'cypress/integration/api-tests/*'
+      - run: $(npm bin)/cypress run --headless --spec 'cypress/integration/*'
       - store_artifacts:
           path: ~/repo/node--client
