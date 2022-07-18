@@ -16,6 +16,5 @@ module.exports = defineConfig({
     },
     baseUrl: process.env.REACT_APP_NOT_SECRET_CODE,
     specPattern: "cypress/**/*.spec.{js,jsx,ts,tsx}",
-  }, 
-  "integrationFolder": "cypress/integration/api-tests"
+  }
 });
