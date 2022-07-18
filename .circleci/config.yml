@@ -18,6 +18,6 @@ workflows:
           env: 'REACT_APP_NOT_SECRET_CODE=https://express-api-react-notion.vercel.app,CYPRESS_BASE_URL=http://localhost:3000'
           #Runs all Cypress tests on Node 14
           executor: cypress/base-14
-          start: npm start
+          start: yarn start
           wait-on: 'http://localhost:3000'
               
