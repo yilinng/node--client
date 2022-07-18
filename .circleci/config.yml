@@ -8,9 +8,17 @@ orbs:
   # - run Cypress tests
   # - store videos and screenshots as artifacts on CircleCI
   #https://github.com/cypress-io/circleci-orb/blob/master/docs/examples.md
-  cypress: cypress-io/cypress@1
+  cypress: cypress-io/cypress@1.29.0
+  node: circleci/node@1.1
+
+executors:
+  with-chrome:
+    docker:
+      - image: 'cypress/browsers:node14.17.6-chrome100-ff98'
+
 workflows:
-  build:
+  version: 2
+  test:
     jobs:
       - cypress/run:
           env: 'REACT_APP_NOT_SECRET_CODE=https://express-api-react-notion.vercel.app,CYPRESS_BASE_URL=http://localhost:3000'
