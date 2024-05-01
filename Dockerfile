@@ -12,6 +12,7 @@ WORKDIR /usr/src/app
 # Cache and Install dependencies
 COPY package.json .
 COPY yarn.lock .
+
 #COPY yarn.lock .
 #RUN yarn install --frozen-lockfile
 # Copy app files
